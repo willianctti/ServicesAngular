@@ -1,0 +1,78 @@
+O service consome conteúdos "de fora" e traz para nossos componentes desejados.
+Ele importa Injeções de dependências. Esse conteúdo poderá ser utilizado passando
+ele como dependência de outro objeto ou classe.
+
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PokemonServiceService {
+  pokeApi: string = 'https://pokeapi.co/api/v2/pokemon/';
+
+
+
+  constructor() { }
+}
+
+
+Para injetar algo, precisamos ir até o construtor de nosso componente desejado.
+
+  constructor(
+    private service: PokemonServiceService
+  ) 
+  {
+    
+
+  }
+
+
+
+
+
+
+
+O módulo HTTP:
+
+primeiramente, precisamos importar o HTTPCLient no app.module
+
+import {HttpClientModule} from '@angular/common/http'
+imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule
+  ],
+
+
+
+no nosso service, faremos uma injeção de depência para trabalharmos com o http
+
+constructor(private http: HttpClient) { }
+
+  private pokeData: any
+
+
+então, podemos utilizar nosso http para dar um get, por exemplo:
+
+  getPokemon(pokemonName: string) {
+    this.pokeData = this.http.get(`${this.baseURL}${pokemonName}`,)
+    console.log(this.pokeData)
+  }
+
+
+Mas, precisaremos tratar o observable que retornará.
+
+ getPokemon(pokemonName: string): Observable<PokemonData> {
+    this.pokeData = this.http.get<PokemonData>(`${this.baseURL}${pokemonName}`,)
+
+    return this.pokeData
+
+
+
+ ngOnInit(): void {
+    this.service.getPokemon('Charizard').subscribe(
+      {
+        next: (res) => console.log(res),
+        error: (err) => console.log(err)
+      }
+    )
